@@ -25,7 +25,7 @@ stages:
         buildContext: $(Build.Repository.LocalPath)
         repository: $(webRepository)
         dockerfile: '$(Build.SourcesDirectory)/Tailspin.SpaceGame.Web/Dockerfile'
-        containerRegistry: 'Container Registry Connection'
+        containerRegistry: 'tailspinacr'
         tags: |
           $(tag)
     - task: Docker@2
@@ -35,7 +35,7 @@ stages:
         buildContext: $(Build.Repository.LocalPath)
         repository: $(leaderboardRepository)
         dockerfile: '$(Build.SourcesDirectory)/Tailspin.SpaceGame.LeaderboardContainer/Dockerfile'
-        containerRegistry: 'Container Registry Connection'
+        containerRegistry: 'tailspinacr'
         tags: |
           $(tag)
     - publish: '$(Build.SourcesDirectory)/manifests'
@@ -54,21 +54,21 @@ stages:
     - task: AzureWebAppContainer@1
       inputs:
        appName: $(WebAppName)
-       azureSubscription: 'Resource Manager - Tailspin - Space Game'
+       azureSubscription: 'Subskrypcja programu Visual Studio Professional'
        imageName: $(RegistryName)/$(webRepository):$(build.buildId)
     - task: KubernetesManifest@0
       displayName: Create imagePullSecret
       inputs:
         action: createSecret
         secretName: $(imagePullSecret)
-        dockerRegistryEndpoint: 'Container Registry Connection'
-        kubernetesServiceConnection: 'Kubernetes Cluster Connection'
+        dockerRegistryEndpoint: 'tailspinacr'
+        kubernetesServiceConnection: 'tailspinaks'
         namespace: 'default'  
     - task: KubernetesManifest@0
       displayName: Deploy to Kubernetes cluster
       inputs:
         action: deploy
-        kubernetesServiceConnection: 'Kubernetes Cluster Connection'
+        kubernetesServiceConnection: 'tailspinaks'
         namespace: 'default'
         manifests: |
           $(Pipeline.Workspace)/manifests/deployment.yml
