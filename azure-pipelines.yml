@@ -49,12 +49,12 @@ stages:
     pool:
       vmImage: 'ubuntu-20.04'
     variables:
-    - group: RegistryGroup
+    - group: Registry Group
     steps:
     - task: AzureWebAppContainer@1
       inputs:
        appName: $(WebAppName)
-       azureSubscription: 'Space Game - web - Release workflow-code'
+       azureSubscription: 'tailspinSub'
        imageName: $(RegistryName)/$(webRepository):$(build.buildId)
     - task: KubernetesManifest@0
       displayName: Create imagePullSecret
